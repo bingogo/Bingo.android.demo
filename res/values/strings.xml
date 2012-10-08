@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Bingo.android.demo</string>
+    <string name="handler">Handler</string>
+    <string name="startThread">开启worker线程</string>
+    <string name="sendMessage">发送消息</string>
+    <string name="workerThreadState">查看工作线程状态</string>
+    <string name="mainThreadState">查看主线程状态</string>
+</resources>
