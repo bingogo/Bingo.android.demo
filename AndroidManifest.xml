@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HandlerActivity" android:label="@string/handler">
+        <activity android:name=".handler.HandlerActivity" android:label="@string/handler">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.SAMPLE_CODE" />

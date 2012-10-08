@@ -1,5 +1,6 @@
-package bingo.android.demo;
+package bingo.android.demo.handler;
 
+import bingo.android.demo.R;
 import bingo.android.util.ThreadUtil;
 import android.app.Activity;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class HandlerActivity extends Activity implements OnClickListener {
 		Log.v("HandlerActivity", "onDestroy!");
 		if(workerThread!= null ) {
 			workerThread.interrupt();
+			
 		}
 	}
 
