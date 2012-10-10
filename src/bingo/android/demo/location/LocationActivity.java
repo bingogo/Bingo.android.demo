@@ -19,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import bingo.android.demo.R;
+import bingo.android.util.LocationUtil;
+import bingo.android.util.NetworkUtil;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
@@ -147,14 +149,25 @@ public class LocationActivity extends Activity implements LocationListener {
 			break;
 		case R.id.telBtn:
 			Log.d(TAG, "CellID button is clicked");
-			requestTelLocation();
+			//requestTelLocation();
+			LocationUtil.getLocationByCell(this);
 			break;
 		case R.id.wifiBtn:
 			Log.d(TAG, "WI-FI button is clicked");
-			requestWIFILocation();
+			//requestWIFILocation();
+			LocationUtil.getLocationByWIFI(this);
 			break;
 		case R.id.allBtn:
-			getLocation();
+			//getLocation();
+			if(!NetworkUtil.networkEnabled(this)) {
+				Log.v(TAG, "Î´Á¬½ÓÍøÂç£¡");
+			}
+			else {
+				Location loc = LocationUtil.getLocationByCell(this);
+				this.showLocationInfo(loc);
+				if(loc != null)
+					LocationUtil.getCityByLocation(this, loc);
+			}
 			break;
 		}
 	}
@@ -210,6 +223,9 @@ public class LocationActivity extends Activity implements LocationListener {
 				JSONObject data_ = new JSONObject(sb.toString());
 				data_ = (JSONObject) data_.get("location");
 				Location loc = new Location(LocationManager.NETWORK_PROVIDER);
+				
+				Log.v(TAG,"location:" + data_);
+				
 				loc.setLatitude((Double) data_.get("latitude"));
 				loc.setLongitude((Double) data_.get("longitude"));
 				
