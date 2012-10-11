@@ -30,7 +30,7 @@ public class NetworkUtil {
 		if(connectivityManager != null)
 		{
 			NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-			enabled = info != null;
+			enabled = info != null && info.isAvailable();
 		}
 		return enabled;
 	}

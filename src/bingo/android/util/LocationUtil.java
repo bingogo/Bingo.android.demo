@@ -199,14 +199,14 @@ public class LocationUtil {
 					result = br.readLine();
 				}
 
-				JSONObject data_ = new JSONObject(sb.toString());
-				data_ = (JSONObject) data_.get("location");
+				JSONObject data = new JSONObject(sb.toString());
+				data = (JSONObject) data.get("location");
 				location = new Location(LocationManager.NETWORK_PROVIDER);
 
-				Log.v(TAG, "location:" + data_);
+				Log.v(TAG, "location:" + data);
 
-				location.setLatitude((Double) data_.get("latitude"));
-				location.setLongitude((Double) data_.get("longitude"));
+				location.setLatitude((Double) data.get("latitude"));
+				location.setLongitude((Double) data.get("longitude"));
 
 				Log.i(TAG, "latitude : " + location.getLatitude()
 						+ "  longitude : " + location.getLongitude());
