@@ -21,7 +21,7 @@ public class NetworkUtil {
 	}
 
 	/*
-	 * 网络是否可用
+	 * 网络是否可用(NOTE:如下的在联通2G网络下显示未连接)
 	 */
 	public static boolean networkEnabled(Context context) {
 		ConnectivityManager connectivityManager = (ConnectivityManager) context

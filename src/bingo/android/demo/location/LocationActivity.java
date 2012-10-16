@@ -38,6 +38,7 @@ import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * 此demo演示如何使用locationManager来获取位置信息
@@ -150,7 +151,14 @@ public class LocationActivity extends Activity implements LocationListener {
 		case R.id.telBtn:
 			Log.d(TAG, "CellID button is clicked");
 			//requestTelLocation();
-			LocationUtil.getLocationByCell(this);
+			Location l2 = LocationUtil.getLocationByCell(this);
+			Toast.makeText(this, "location is null ? [" + String.valueOf(l2 == null) + "]", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.tel2Btn:
+			Log.d(TAG, "CellID2 button is clicked");
+			//requestTelLocation();
+			Location l = LocationUtil.getLocationByCell(this, true);
+			Toast.makeText(this, "location is null ? [" + String.valueOf(l == null) + "]", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.wifiBtn:
 			Log.d(TAG, "WI-FI button is clicked");
@@ -165,6 +173,7 @@ public class LocationActivity extends Activity implements LocationListener {
 			else {
 				Location loc = LocationUtil.getLocationByCell(this);
 				this.showLocationInfo(loc);
+				
 				if(loc != null)
 					LocationUtil.getCityByLocation(this, loc);
 			}

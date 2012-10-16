@@ -23,6 +23,7 @@ import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 
@@ -125,21 +126,23 @@ public class LocationUtil {
 		}
 		return location;
 	}
-	
+
 	/*
-	 * 根据Location获取地址信息
-	 * 注意：这里依赖google的位置服务，在某些设备上并没有安装此服务
+	 * 根据Location获取地址信息 注意：这里依赖google的位置服务，在某些设备上并没有安装此服务
 	 */
 	public static String getCityByLocation(Context context, Location location) {
 		Geocoder geo = new Geocoder(context);
 		String city = null;
 		try {
-			List<Address> address = geo.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-			if(address!= null && address.size()>0)
-			{
+			List<Address> address = geo.getFromLocation(location.getLatitude(),
+					location.getLongitude(), 1);
+			if (address != null && address.size() > 0) {
 				Address add = address.get(0);
-				Log.v(TAG, String.format("getAdminArea:[%1$s],getCountryName:[%2$s],getLocality:[%3$s]",
-						add.getAdminArea(), add.getCountryName(), add.getLocality()));
+				Log.v(TAG,
+						String.format(
+								"getAdminArea:[%1$s],getCountryName:[%2$s],getLocality:[%3$s]",
+								add.getAdminArea(), add.getCountryName(),
+								add.getLocality()));
 				city = add.getLocality();
 			}
 		} catch (IOException e) {
@@ -174,13 +177,13 @@ public class LocationUtil {
 	/*
 	 * 请求google地址服务，支持移动蜂窝基站和wifi地址两种
 	 */
-	private static Location requestLocationService(JSONObject holder) {		 
-		Log.v(TAG, "requestLocation: " + holder.toString());
+	private static Location requestLocationService(JSONObject holder) {
 		BufferedReader br = null;
 		Location location = null;
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost("http://www.google.com/loc/json");
+			//NOTE:某些设备的dns解析会有问题，比如这里针对www.google.com，徐的机器就无法解析，因此换成ip地址；更好的方式是建立代理访问获取
+			HttpPost post = new HttpPost("http://74.125.128.104/loc/json");
 			StringEntity se = new StringEntity(holder.toString());
 
 			Log.v(TAG, "post:" + holder.toString());
@@ -199,8 +202,11 @@ public class LocationUtil {
 					result = br.readLine();
 				}
 
+				Log.v(TAG, "location:" + sb.toString());
 				JSONObject data = new JSONObject(sb.toString());
 				data = (JSONObject) data.get("location");
+				
+				
 				location = new Location(LocationManager.NETWORK_PROVIDER);
 
 				Log.v(TAG, "location:" + data);
@@ -210,6 +216,7 @@ public class LocationUtil {
 
 				Log.i(TAG, "latitude : " + location.getLatitude()
 						+ "  longitude : " + location.getLongitude());
+				
 			}
 
 		} catch (JSONException e) {
@@ -240,6 +247,119 @@ public class LocationUtil {
 			}
 		}
 		return location;
+	}
+	
+	
+	/** 基站信息 */
+    private static class SCell
+    {
+     public int CID; // cellId基站编号，是个16位的数据（范围是0到65535）
+        public int MCC; // mobileCountryCode移动国家代码（中国的为460）
+        public int MNC; // mobileNetworkCode移动网络号码（中国移动为00，中国联通为01）
+        public int LAC; // locationAreaCode位置区域码        
+        public String radioType; //联通移动gsm，电信cdma       
+
+    }
+ 
+
+	public static Location getLocationByCell(Context context, boolean isAll) {
+		TelephonyManager mTelNet = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		int type = mTelNet.getNetworkType();		
+		
+		SCell cell = new SCell();
+		// 中国电信为CTC: NETWORK_TYPE_EVDO_A是中国电信3G的getNetworkType;
+		  // NETWORK_TYPE_CDMA电信2G是CDMA
+		  if (type == TelephonyManager.NETWORK_TYPE_EVDO_A || type == TelephonyManager.NETWORK_TYPE_CDMA || type == TelephonyManager.NETWORK_TYPE_1xRTT)
+		  {
+			  Log.v(TAG, "NETWORK_TYPE_CDMA电信2G是CDMA");
+		CdmaCellLocation location = (CdmaCellLocation) mTelNet.getCellLocation();
+
+		   StringBuilder nsb = new StringBuilder();
+		   nsb.append(location.getSystemId());
+
+		   cell.CID = location.getBaseStationId();  
+		   cell.LAC = location.getNetworkId();
+		   cell.MNC = location.getSystemId();
+		   cell.MCC = Integer.valueOf(mTelNet.getNetworkOperator().substring(0, 3));
+		   cell.radioType = "cdma";
+
+		  }
+		  // 移动2G卡 + CMCC + 2 type = NETWORK_TYPE_EDGE
+		  else if (type == TelephonyManager.NETWORK_TYPE_EDGE)
+		  {
+			  Log.v(TAG, "移动2G卡 + CMCC + 2 type");
+		   GsmCellLocation location = (GsmCellLocation) mTelNet.getCellLocation();
+		   String operator = mTelNet.getNetworkOperator();
+		   
+		   cell.CID = location.getCid();
+		   cell.MCC = Integer.parseInt(operator.substring(0, 3));
+		   cell.MNC = Integer.parseInt(operator.substring(3));
+		   cell.LAC = location.getLac();   
+		   cell.radioType = "gsm";
+		  }
+		  // 联通的2G经过测试 China Unicom 1 NETWORK_TYPE_GPRS
+		  // 经过测试，获取联通数据的时候，无法获取国家代码和网络号码，错误类型为JSON Parsing Error
+		  else if (type == TelephonyManager.NETWORK_TYPE_GPRS)
+		  {
+			  Log.v(TAG, "联通的2G经过测试 China Unicom 1 NETWORK_TYPE_GPRS");
+		   GsmCellLocation location = (GsmCellLocation) mTelNet.getCellLocation();
+		   cell.CID = location.getCid();
+		   cell.LAC = location.getLac();
+		   cell.radioType = "gsm";
+		  }
+		  else
+		  {
+			  Log.v(TAG, "null");			  
+			  return getLocationByCell(context);
+		  }
+
+		
+		try {
+	            /** 构造POST的JSON数据 */
+	            JSONObject holder = new JSONObject();
+	            holder.put("version", "1.1.0");
+	            holder.put("host", "maps.google.com");            
+	            holder.put("request_address", true);
+	            holder.put("radio_type", cell.radioType);
+	            //holder.put("carrier", "HTC");
+	            holder.put("home_mobile_country_code", cell.MCC);
+	   holder.put("home_mobile_network_code", cell.MNC);    
+	   holder.put("address_language", "zh_CN");
+	   
+	            
+	           
+
+	            JSONObject tower = new JSONObject();
+	            tower.put("mobile_country_code", cell.MCC);
+	            tower.put("mobile_network_code", cell.MNC);
+	            tower.put("cell_id", cell.CID);
+	            tower.put("location_area_code", cell.LAC);  
+	            tower.put("age", 0);           
+	           
+
+	            JSONArray array = new JSONArray();
+	            array.put(tower);
+	            
+	            holder.put("cell_towers", array);
+	            Log.e("Location send", holder.toString());
+			
+	            holder.put("cell_towers", array);
+			return requestLocationService(holder);
+
+		} catch (JSONException e) {
+			android.util.Log
+					.e(TAG,
+							"network get the latitude and longitude ocurr JSONException error",
+							e);
+		} catch (Exception e) {
+			android.util.Log
+					.e(TAG,
+							"network get the latitude and longitude ocurr Exception error",
+							e);
+		}
+		 
+		return null;
 	}
 
 }

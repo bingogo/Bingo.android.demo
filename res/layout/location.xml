@@ -18,6 +18,13 @@
         android:text="CellID"
         android:onClick="onRequestLocation" />
     
+     <Button
+        android:id="@+id/tel2Btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CellID2(联通2G)"
+        android:onClick="onRequestLocation" />
+    
     <Button
         android:id="@+id/wifiBtn"
         android:layout_width="match_parent"
