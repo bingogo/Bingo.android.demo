@@ -19,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import bingo.android.demo.R;
+import bingo.android.exception.AppException;
+import bingo.android.util.HttpUtil;
 import bingo.android.util.LocationUtil;
 import bingo.android.util.NetworkUtil;
 import android.app.Activity;
@@ -158,6 +160,16 @@ public class LocationActivity extends Activity implements LocationListener {
 			Log.d(TAG, "CellID2 button is clicked");
 			//requestTelLocation();
 			Location l = LocationUtil.getLocationByCell(this, true);
+			try {
+				String api = String.format("http://10.0.6.33:9000/location/city?lat=%1$s&long=%2$s", 
+						l.getLatitude(), l.getLongitude());
+				Toast.makeText(this, api, Toast.LENGTH_SHORT).show();
+				String s = HttpUtil.get(api);
+				Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+			} catch (AppException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Toast.makeText(this, "location is null ? [" + String.valueOf(l == null) + "]", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.wifiBtn:

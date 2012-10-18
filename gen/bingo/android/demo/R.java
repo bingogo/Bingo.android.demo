@@ -12,18 +12,32 @@ public final class R {
     }
     public static final class drawable {
         public static final int cloud=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
+        public static final int dot=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int ic_slider_dot_off=0x7f020003;
+        public static final int ic_slider_dot_on=0x7f020004;
+        public static final int park=0x7f020005;
+        public static final int repair=0x7f020006;
+        public static final int slider_dot_off=0x7f020007;
+        public static final int slider_dot_on=0x7f020008;
+        public static final int station=0x7f020009;
+        public static final int wash=0x7f02000a;
     }
     public static final class id {
         public static final int allBtn=0x7f060009;
         public static final int gpsBtn=0x7f060004;
+        public static final int ll=0x7f06000f;
         public static final int location=0x7f06000a;
         public static final int mainThreadState=0x7f060002;
         public static final int netBtn=0x7f060008;
+        public static final int slider=0x7f06000d;
+        public static final int slider_dots=0x7f06000c;
+        public static final int slider_viewpager=0x7f06000b;
         public static final int startThread=0x7f060000;
         public static final int tel2Btn=0x7f060006;
         public static final int telBtn=0x7f060005;
         public static final int textView=0x7f060003;
+        public static final int viewpager=0x7f06000e;
         public static final int wifiBtn=0x7f060007;
         public static final int workerThreadState=0x7f060001;
     }
@@ -31,13 +45,26 @@ public final class R {
         public static final int dpi=0x7f030000;
         public static final int handler=0x7f030001;
         public static final int location=0x7f030002;
+        public static final int slider_basic=0x7f030003;
+        public static final int slider_basic_demo=0x7f030004;
+        public static final int viewpagerdemo=0x7f030005;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int app_run_code_error=0x7f04000d;
+        public static final int app_server_error=0x7f04000e;
+        public static final int data_parser_failed=0x7f040008;
         public static final int handler=0x7f040001;
+        public static final int http_exception_error=0x7f04000b;
+        public static final int http_status_code_error=0x7f04000a;
+        public static final int io_exception_error=0x7f040009;
         public static final int location=0x7f040006;
         public static final int mainThreadState=0x7f040005;
+        /**  针对AppException 
+         */
+        public static final int network_not_connected=0x7f040007;
         public static final int sendMessage=0x7f040003;
+        public static final int socket_exception_error=0x7f04000c;
         public static final int startThread=0x7f040002;
         public static final int workerThreadState=0x7f040004;
     }

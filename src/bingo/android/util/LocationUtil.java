@@ -185,6 +185,10 @@ public class LocationUtil {
 			//NOTE:某些设备的dns解析会有问题，比如这里针对www.google.com，徐的机器就无法解析，因此换成ip地址；更好的方式是建立代理访问获取
 			HttpPost post = new HttpPost("http://74.125.128.104/loc/json");
 			StringEntity se = new StringEntity(holder.toString());
+			
+			//测试使用代理一次性解决问题
+			HttpUtil.post("http://10.0.6.33:9000/location/loc", se);
+			
 
 			Log.v(TAG, "post:" + holder.toString());
 
